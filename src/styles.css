@@ -18,3 +18,20 @@ body {
    */
   background-image: url('./images/bg-pattern.png');
 }
+
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  width: 500px;
+}
+
+.content {
+  width: 40%;
+  margin: 10px;
+}
+
+.country__flag {
+  width: calc(60% - 20px);
+  height: 100%;
+  margin-top: 35px;
+}

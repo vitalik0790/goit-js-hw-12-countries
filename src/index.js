@@ -1,44 +1,62 @@
 import './styles.css';
+import '@pnotify/core/dist/BrightTheme.css';
+import '@pnotify/core/dist/PNotify.css';
+import { error } from '@pnotify/core';
 
-// import { notice } from '@pnotify/core';
-// import '@pnotify/core/dist/BrightTheme.css';
-// import '@pnotify/core/dist/Material.css';
-// import '@pnotify/core/dist/PNotify.css';
-// import 'material-design-icons/iconfont/material-icons.css';
+import fetchCountries from './js/fetchCountries'
 import debounce from 'lodash.debounce';
-// import countries from './js/fetchCountries';
 
-const finder = document.querySelector('.finder');
-const content = document.querySelector('.content');
+import countryList from './templates/country-list.hbs';
+import countryCard from './templates/country-card.hbs';
 
-const createMarkup = (country) => {
-    return `
-    <li>
-    <h2>${country.name}</h2>
-    <h2>Capital: ${country.capital}</h2>
-    <h2>Population: ${country.population}</h2>
-    <h2>Languages: ${country.languages[0].name}</h2>
-    <img src="${country.flag}" width="100">
-    </li>
-    `;
+
+const refs = {
+    input: document.querySelector('.input'),
+    output: document.querySelector('.result'),
 };
-const getData = (e) => {
-    fetch(`https://restcountries.eu/rest/v2/name/${e.target.value}`)
-        .then(response => {
-            // console.log(response.json());
-            return response.json()
+
+refs.input.addEventListener('input', onSearchInput);
+
+function onSearchInput(e) {
+    if (!e.target.value) {
+        refs.output.innerHTML = '';
+        return;
+    }
+    fetchCountries(e.target.value)
+        .then(countries => {
+            if (countries.status === 404) {
+                return Promise.reject(
+                    'The country for your request was not found.Please try again',
+                );
+            }
+
+            if (countries.length > 10) {
+                error({
+                    text: 'Too many matches found.Please enter a more specific query!',
+                });
+                return;
+            }
+
+            countries.length >= 2
+                ? renderCountriesList(countries)
+                : renderCountryCard(countries);
         })
-        .then((data) => {
-            content.innerHTML = `<ul>${data.reduce((acc, item) => {
-                acc += createMarkup(item);
-                return acc;
-            }, "")}</ul>`;
+        .catch(err => {
+            error({
+                text: err,
+            });
         });
+}
 
-};
+function renderCountriesList(countries) {
+    refs.output.innerHTML = countryList(countries);
+}
+function renderCountryCard(countries) {
+    refs.output.innerHTML = countryCard(countries);
+}
 
 
 
-finder.addEventListener('input', getData)
+
 
 
