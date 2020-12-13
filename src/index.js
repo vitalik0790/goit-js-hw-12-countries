@@ -15,7 +15,7 @@ const refs = {
     output: document.querySelector('.result'),
 };
 
-refs.input.addEventListener('input', onSearchInput);
+refs.input.addEventListener('input', debounce(onSearchInput, 500));
 
 function onSearchInput(e) {
     if (!e.target.value) {
