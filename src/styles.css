@@ -31,7 +31,7 @@ body {
 }
 
 .country__flag {
-  width: calc(60% - 20px);
+  width: 400px;
   height: 100%;
   margin-top: 35px;
 }
