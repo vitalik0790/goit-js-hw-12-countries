@@ -25,9 +25,10 @@ function onSearchInput(e) {
     fetchCountries(e.target.value)
         .then(countries => {
             if (countries.status === 404) {
-                return Promise.reject(
-                    'The country for your request was not found.Please try again',
-                );
+                error({
+                    text: 'The country for your request was not found.Please try again',
+                });
+                return;
             }
 
             if (countries.length > 10) {
@@ -37,9 +38,10 @@ function onSearchInput(e) {
                 return;
             }
 
-            countries.length >= 2
-                ? renderCountriesList(countries)
-                : renderCountryCard(countries);
+            if (countries.length >= 2) {
+                return renderCountriesList(countries);
+            }
+            return renderCountryCard(countries);
         })
         .catch(err => {
             error({
